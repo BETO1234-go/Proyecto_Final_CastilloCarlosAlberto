@@ -75,7 +75,7 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
                     SizedBox(
                       width: 260,
                       child: DropdownButtonFormField<String>(
-                        value: _selectedCategory,
+                        initialValue: _selectedCategory,
                         decoration: const InputDecoration(
                           labelText: 'Categoria',
                         ),
@@ -97,7 +97,7 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
                     SizedBox(
                       width: 220,
                       child: DropdownButtonFormField<int>(
-                        value: _selectedDays,
+                        initialValue: _selectedDays,
                         decoration: const InputDecoration(
                           labelText: 'Periodo movimientos',
                         ),
@@ -169,15 +169,18 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
                           onPressed: _exportingCsv
                               ? null
                               : () async {
+                                  final messenger = ScaffoldMessenger.of(
+                                    context,
+                                  );
                                   setState(() => _exportingCsv = true);
                                   try {
                                     await _exportService.exportInventoryCsv(
                                       products: filteredProducts,
                                     );
-                                    if (!mounted) {
+                                    if (!context.mounted) {
                                       return;
                                     }
-                                    ScaffoldMessenger.of(context).showSnackBar(
+                                    messenger.showSnackBar(
                                       const SnackBar(
                                         content: Text(
                                           'CSV generado correctamente',
@@ -185,10 +188,10 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
                                       ),
                                     );
                                   } catch (_) {
-                                    if (!mounted) {
+                                    if (!context.mounted) {
                                       return;
                                     }
-                                    ScaffoldMessenger.of(context).showSnackBar(
+                                    messenger.showSnackBar(
                                       const SnackBar(
                                         content: Text(
                                           'No se pudo exportar CSV',
@@ -218,16 +221,19 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
                           onPressed: _exportingPdf
                               ? null
                               : () async {
+                                  final messenger = ScaffoldMessenger.of(
+                                    context,
+                                  );
                                   setState(() => _exportingPdf = true);
                                   try {
                                     await _exportService.exportInventoryPdf(
                                       products: filteredProducts,
                                       movements: filteredMovements,
                                     );
-                                    if (!mounted) {
+                                    if (!context.mounted) {
                                       return;
                                     }
-                                    ScaffoldMessenger.of(context).showSnackBar(
+                                    messenger.showSnackBar(
                                       const SnackBar(
                                         content: Text(
                                           'PDF generado correctamente',
@@ -235,10 +241,10 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
                                       ),
                                     );
                                   } catch (_) {
-                                    if (!mounted) {
+                                    if (!context.mounted) {
                                       return;
                                     }
-                                    ScaffoldMessenger.of(context).showSnackBar(
+                                    messenger.showSnackBar(
                                       const SnackBar(
                                         content: Text(
                                           'No se pudo exportar PDF',

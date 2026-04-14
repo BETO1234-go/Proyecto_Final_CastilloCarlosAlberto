@@ -72,7 +72,7 @@ class _MovementsPageState extends ConsumerState<MovementsPage> {
                             width: largeWidth,
                             child: DropdownButtonFormField<String>(
                               isExpanded: true,
-                              value: _selectedProductId,
+                              initialValue: _selectedProductId,
                               hint: const Text('Selecciona producto'),
                               items: [
                                 for (final p in state.products)
@@ -91,6 +91,7 @@ class _MovementsPageState extends ConsumerState<MovementsPage> {
                           IconButton.filledTonal(
                             tooltip: 'Escanear SKU',
                             onPressed: () async {
+                              final messenger = ScaffoldMessenger.of(context);
                               final scanResult = await Navigator.of(context)
                                   .push<String>(
                                     MaterialPageRoute(
@@ -111,10 +112,10 @@ class _MovementsPageState extends ConsumerState<MovementsPage> {
                                 }
                               }
                               if (matchId == null) {
-                                if (!mounted) {
+                                if (!context.mounted) {
                                   return;
                                 }
-                                ScaffoldMessenger.of(context).showSnackBar(
+                                messenger.showSnackBar(
                                   SnackBar(
                                     content: Text(
                                       'No se encontro producto para SKU: ${scanResult.trim()}',
@@ -131,7 +132,7 @@ class _MovementsPageState extends ConsumerState<MovementsPage> {
                             width: mediumWidth,
                             child: DropdownButtonFormField<MovementType>(
                               isExpanded: true,
-                              value: _selectedType,
+                              initialValue: _selectedType,
                               items: const [
                                 DropdownMenuItem(
                                   value: MovementType.incoming,

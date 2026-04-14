@@ -4,7 +4,6 @@ import 'package:examen_final/features/inventory/domain/entities/stock_movement.d
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:sqflite_common/sqlite_api.dart';
 import 'package:uuid/uuid.dart';
 
 abstract class InventoryRepository {
