@@ -55,228 +55,251 @@ class _ReportsPageState extends ConsumerState<ReportsPage> {
       0,
       (sum, p) => sum + (p.stock * p.price),
     );
-
     return Scaffold(
       appBar: AppBar(title: const Text('Reportes')),
-      body: Padding(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            if (state.isLoading) const LinearProgressIndicator(),
-            if (state.isLoading) const SizedBox(height: 12),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(14),
-                child: Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: [
-                    SizedBox(
-                      width: 260,
-                      child: DropdownButtonFormField<String>(
-                        initialValue: _selectedCategory,
-                        decoration: const InputDecoration(
-                          labelText: 'Categoria',
+      body: SafeArea(
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (state.isLoading) const LinearProgressIndicator(),
+              if (state.isLoading) const SizedBox(height: 12),
+              const SizedBox(height: 12),
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Wrap(
+                    spacing: 12,
+                    runSpacing: 12,
+                    children: [
+                      SizedBox(
+                        width: 260,
+                        child: DropdownButtonFormField<String>(
+                          initialValue: _selectedCategory,
+                          decoration: const InputDecoration(
+                            labelText: 'Categoria',
+                          ),
+                          items: [
+                            for (final category in categories)
+                              DropdownMenuItem(
+                                value: category,
+                                child: Text(category),
+                              ),
+                          ],
+                          onChanged: (value) {
+                            if (value == null) {
+                              return;
+                            }
+                            setState(() => _selectedCategory = value);
+                          },
                         ),
-                        items: [
-                          for (final category in categories)
+                      ),
+                      SizedBox(
+                        width: 220,
+                        child: DropdownButtonFormField<int>(
+                          initialValue: _selectedDays,
+                          decoration: const InputDecoration(
+                            labelText: 'Periodo movimientos',
+                          ),
+                          items: const [
                             DropdownMenuItem(
-                              value: category,
-                              child: Text(category),
+                              value: 7,
+                              child: Text('Ultimos 7 dias'),
                             ),
-                        ],
-                        onChanged: (value) {
-                          if (value == null) {
-                            return;
-                          }
-                          setState(() => _selectedCategory = value);
-                        },
-                      ),
-                    ),
-                    SizedBox(
-                      width: 220,
-                      child: DropdownButtonFormField<int>(
-                        initialValue: _selectedDays,
-                        decoration: const InputDecoration(
-                          labelText: 'Periodo movimientos',
+                            DropdownMenuItem(
+                              value: 30,
+                              child: Text('Ultimos 30 dias'),
+                            ),
+                            DropdownMenuItem(
+                              value: 90,
+                              child: Text('Ultimos 90 dias'),
+                            ),
+                          ],
+                          onChanged: (value) {
+                            if (value == null) {
+                              return;
+                            }
+                            setState(() => _selectedDays = value);
+                          },
                         ),
-                        items: const [
-                          DropdownMenuItem(
-                            value: 7,
-                            child: Text('Ultimos 7 dias'),
-                          ),
-                          DropdownMenuItem(
-                            value: 30,
-                            child: Text('Ultimos 30 dias'),
-                          ),
-                          DropdownMenuItem(
-                            value: 90,
-                            child: Text('Ultimos 90 dias'),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          if (value == null) {
-                            return;
-                          }
-                          setState(() => _selectedDays = value);
-                        },
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 12),
-            Wrap(
-              spacing: 12,
-              runSpacing: 12,
-              children: [
-                _ReportCard(
-                  title: 'Valor de inventario',
-                  value: currency.format(totalValue),
+              const SizedBox(height: 12),
+              Text(
+                'Resumen rapido',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 12),
+              Wrap(
+                spacing: 14,
+                runSpacing: 14,
+                children: [
+                  _ReportCard(
+                    title: 'Valor de inventario',
+                    value: currency.format(totalValue),
+                  ),
+                  _ReportCard(
+                    title: 'Valor potencial venta',
+                    value: currency.format(potentialRevenue),
+                  ),
+                  _ReportCard(
+                    title: 'Movimientos registrados',
+                    value: filteredMovements.length.toString(),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 20),
+              Text(
+                'Exportacion',
+                style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const SizedBox(height: 12),
+              Card(
+                elevation: 0,
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(20),
+                  side: BorderSide(
+                    color: Theme.of(context).colorScheme.outlineVariant,
+                  ),
                 ),
-                _ReportCard(
-                  title: 'Valor potencial venta',
-                  value: currency.format(potentialRevenue),
-                ),
-                _ReportCard(
-                  title: 'Movimientos registrados',
-                  value: filteredMovements.length.toString(),
-                ),
-              ],
-            ),
-            const SizedBox(height: 24),
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      'Exportacion',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text(
-                      'Los reportes se exportan desde aqui en formato CSV o PDF.',
-                    ),
-                    const SizedBox(height: 12),
-                    Wrap(
-                      spacing: 12,
-                      children: [
-                        FilledButton.icon(
-                          onPressed: _exportingCsv
-                              ? null
-                              : () async {
-                                  final messenger = ScaffoldMessenger.of(
-                                    context,
-                                  );
-                                  setState(() => _exportingCsv = true);
-                                  try {
-                                    await _exportService.exportInventoryCsv(
-                                      products: filteredProducts,
+                child: Padding(
+                  padding: const EdgeInsets.all(18),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Genera archivos listos para compartir',
+                        style: Theme.of(context).textTheme.titleMedium
+                            ?.copyWith(fontWeight: FontWeight.w700),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Los reportes se exportan desde aqui en formato CSV o PDF.',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(height: 12),
+                      Wrap(
+                        spacing: 12,
+                        runSpacing: 12,
+                        children: [
+                          FilledButton.icon(
+                            onPressed: _exportingCsv
+                                ? null
+                                : () async {
+                                    final messenger = ScaffoldMessenger.of(
+                                      context,
                                     );
-                                    if (!context.mounted) {
-                                      return;
-                                    }
-                                    messenger.showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'CSV generado correctamente',
+                                    setState(() => _exportingCsv = true);
+                                    try {
+                                      await _exportService.exportInventoryCsv(
+                                        products: filteredProducts,
+                                      );
+                                      if (!context.mounted) {
+                                        return;
+                                      }
+                                      messenger.showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'CSV generado correctamente',
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  } catch (_) {
-                                    if (!context.mounted) {
-                                      return;
-                                    }
-                                    messenger.showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'No se pudo exportar CSV',
+                                      );
+                                    } catch (_) {
+                                      if (!context.mounted) {
+                                        return;
+                                      }
+                                      messenger.showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'No se pudo exportar CSV',
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  } finally {
-                                    if (mounted) {
-                                      setState(() => _exportingCsv = false);
+                                      );
+                                    } finally {
+                                      if (mounted) {
+                                        setState(() => _exportingCsv = false);
+                                      }
                                     }
-                                  }
-                                },
-                          icon: _exportingCsv
-                              ? const SizedBox(
-                                  width: 14,
-                                  height: 14,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Icon(Icons.table_chart),
-                          label: Text(
-                            _exportingCsv ? 'Exportando...' : 'Exportar CSV',
+                                  },
+                            icon: _exportingCsv
+                                ? const SizedBox(
+                                    width: 14,
+                                    height: 14,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Icon(Icons.table_chart),
+                            label: Text(
+                              _exportingCsv ? 'Exportando...' : 'Exportar CSV',
+                            ),
                           ),
-                        ),
-                        FilledButton.tonalIcon(
-                          onPressed: _exportingPdf
-                              ? null
-                              : () async {
-                                  final messenger = ScaffoldMessenger.of(
-                                    context,
-                                  );
-                                  setState(() => _exportingPdf = true);
-                                  try {
-                                    await _exportService.exportInventoryPdf(
-                                      products: filteredProducts,
-                                      movements: filteredMovements,
+                          FilledButton.tonalIcon(
+                            onPressed: _exportingPdf
+                                ? null
+                                : () async {
+                                    final messenger = ScaffoldMessenger.of(
+                                      context,
                                     );
-                                    if (!context.mounted) {
-                                      return;
-                                    }
-                                    messenger.showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'PDF generado correctamente',
+                                    setState(() => _exportingPdf = true);
+                                    try {
+                                      await _exportService.exportInventoryPdf(
+                                        products: filteredProducts,
+                                        movements: filteredMovements,
+                                      );
+                                      if (!context.mounted) {
+                                        return;
+                                      }
+                                      messenger.showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'PDF generado correctamente',
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  } catch (_) {
-                                    if (!context.mounted) {
-                                      return;
-                                    }
-                                    messenger.showSnackBar(
-                                      const SnackBar(
-                                        content: Text(
-                                          'No se pudo exportar PDF',
+                                      );
+                                    } catch (_) {
+                                      if (!context.mounted) {
+                                        return;
+                                      }
+                                      messenger.showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'No se pudo exportar PDF',
+                                          ),
                                         ),
-                                      ),
-                                    );
-                                  } finally {
-                                    if (mounted) {
-                                      setState(() => _exportingPdf = false);
+                                      );
+                                    } finally {
+                                      if (mounted) {
+                                        setState(() => _exportingPdf = false);
+                                      }
                                     }
-                                  }
-                                },
-                          icon: _exportingPdf
-                              ? const SizedBox(
-                                  width: 14,
-                                  height: 14,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                              : const Icon(Icons.picture_as_pdf),
-                          label: Text(
-                            _exportingPdf ? 'Exportando...' : 'Exportar PDF',
+                                  },
+                            icon: _exportingPdf
+                                ? const SizedBox(
+                                    width: 14,
+                                    height: 14,
+                                    child: CircularProgressIndicator(
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                : const Icon(Icons.picture_as_pdf),
+                            label: Text(
+                              _exportingPdf ? 'Exportando...' : 'Exportar PDF',
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

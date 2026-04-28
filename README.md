@@ -133,6 +133,6 @@ El APK generado se encuentra en:
 
 ## Autor
 
-- Nombre del estudiante: [Agregar nombre]
+- Nombre del estudiante: Carlos Alberto Castillo Pinzon
 - Institucion: ITES Rene Descartes
 - Ciclo: Enero - Abril 2026 (26-2)
